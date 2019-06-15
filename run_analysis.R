@@ -2,9 +2,9 @@
 library(dplyr)
 
 # Read in the datasets
-X_train <- read.table("train/X_train.txt")
-X_test <- read.table("test/X_test.txt")
-features <- read.table("features.txt")
+X_train <- read.table("UCI HAR Dataset/train/X_train.txt")
+X_test <- read.table("UCI HAR Dataset/test/X_test.txt")
+features <- read.table("UCI HAR Dataset/features.txt")
 
 # Change the variable names in X_train and X_test to descriptive names
 names(X_train) <- features$V2
@@ -16,19 +16,19 @@ X_train <- X_train[,grepl("std\\(",names(X_train)) | grepl("mean\\(",names(X_tra
 X_test <- X_test[,grepl("std\\(",names(X_test)) | grepl("mean\\(",names(X_test))]
 
 # Add fields to datasets: activity_label, subject
-y_train <- read.table("train/y_train.txt")
-y_test <- read.table("test/y_test.txt")
+y_train <- read.table("UCI HAR Dataset/train/y_train.txt")
+y_test <- read.table("UCI HAR Dataset/test/y_test.txt")
 names(y_train) <- "activity"
 names(y_test) <- "activity"
 
-activity_labels <- read.table("activity_labels.txt")
+activity_labels <- read.table("UCI HAR Dataset/activity_labels.txt")
 names(activity_labels) <- c("activity","activity_label")
 
 y_train_labels <- left_join(y_train,activity_labels)
 y_test_labels <- left_join(y_test,activity_labels)
 
-subject_train <- read.table("train/subject_train.txt")
-subject_test <- read.table("test/subject_test.txt")
+subject_train <- read.table("UCI HAR Dataset/train/subject_train.txt")
+subject_test <- read.table("UCI HAR Dataset/test/subject_test.txt")
 names(subject_train) <- "subject"
 names(subject_test) <- "subject"
 train <- cbind(X_train,y_train_labels,subject_train)
@@ -47,5 +47,6 @@ rm(test,train)
 grouped <- group_by(final_dataset,activity_label,subject)
 grouped <- select(grouped,-set)
 final_dataset2 <- summarize_all(grouped,mean)
-write.csv(final_dataset2,"activity_data.csv")
+names(final_dataset2)[1] = "activity"
+write.table(final_dataset2,"activity_data.txt",row.names=FALSE)
 rm(grouped, final_dataset, final_dataset2)
